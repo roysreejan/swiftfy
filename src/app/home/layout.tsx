@@ -1,26 +1,24 @@
-"use client"; 
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { useState } from "react";
+import { DynamicHeader } from "@/components/dynamic-header";
 
-export default function HomeLayout({
-  children,
-}: {
+export default async function HomeLayout({ 
+  children 
+}: { 
   children: React.ReactNode;
 }) {
-  const [currentPage, setCurrentPage] = useState("Home");
+  const session = await getServerSession(authOptions);
+  if (!session) redirect("/login"); // protect page
 
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
-        <AppSidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <AppSidebar />
         <main className="flex-1 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <SidebarTrigger />
-            <h1 className="text-sm font-normal">
-              Home &gt; {currentPage}
-            </h1>
-          </div>
+          <DynamicHeader section="Home" />
           {children}
         </main>
       </div>

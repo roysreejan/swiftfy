@@ -1,27 +1,25 @@
-"use client";
-
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+// app/blog/layout.tsx (Server Component)
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { useState } from "react";
+import { DynamicHeader } from "@/components/dynamic-header";
 
-export default function BlogLayout({
-  children,
-}: {
+export default async function BlogLayout({ 
+  children 
+}: { 
   children: React.ReactNode;
 }) {
-  const [currentPage, setCurrentPage] = useState("Blog");
-
+  const session = await getServerSession(authOptions);
+  if (!session) redirect("/login");
+  
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
-        <AppSidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <AppSidebar />
         <main className="flex-1 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <SidebarTrigger />
-            <h1 className="text-sm font-normal">
-              Blog &gt; {currentPage}
-            </h1>
-          </div>
+          <DynamicHeader section="Blog" />
           {children}
         </main>
       </div>

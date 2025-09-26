@@ -26,6 +26,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
+interface Category {
+  id: number;
+  name: string;
+  description: string;
+  position: number;
+  status: boolean;
+}
+
+interface MobileCategoryCardProps {
+  item: Category;
+  index: number;
+}
+
 const initialData = [
   {
     id: 1,
@@ -135,7 +148,7 @@ const initialData = [
 ];
 
 export default function BlogCategoryTable() {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState<Category[]>(initialData);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -205,7 +218,7 @@ export default function BlogCategoryTable() {
   };
 
   // Mobile card view for small screens
-  const MobileCategoryCard = ({ item, index }: { item: any; index: number }) => (
+  const MobileCategoryCard = ({ item, index }: MobileCategoryCardProps) => (
     <Card className="mb-4 bg-white/80 backdrop-blur-sm border-0 shadow-sm">
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-3">
@@ -217,7 +230,7 @@ export default function BlogCategoryTable() {
             #{item.position}
           </Badge>
         </div>
-        
+
         <div className="flex items-center justify-between border-t pt-3">
           <div className="flex items-center space-x-2">
             <Switch
@@ -235,7 +248,7 @@ export default function BlogCategoryTable() {
               {item.status ? "Active" : "Inactive"}
             </Badge>
           </div>
-          
+
           <div className="flex space-x-1">
             <Button
               size="sm"
@@ -275,42 +288,55 @@ export default function BlogCategoryTable() {
                       Manage your blog categories and their visibility settings
                     </p>
                   </div>
-                  
+
                   {/* Mobile menu button */}
                   <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                     <SheetTrigger asChild>
-                      <Button variant="outline" size="icon" className="lg:hidden">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="lg:hidden"
+                      >
                         <Menu className="h-4 w-4" />
                       </Button>
                     </SheetTrigger>
-                    <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                    <SheetContent
+                      side="right"
+                      className="w-[300px] sm:w-[400px]"
+                    >
                       <div className="flex flex-col h-full">
                         <div className="flex items-center justify-between mb-6">
                           <h2 className="text-lg font-semibold">Menu</h2>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => setMobileMenuOpen(false)}
                           >
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
-                        
+
                         <div className="space-y-4">
                           <Button className="w-full justify-start bg-blue-600 hover:bg-blue-700 text-white">
                             <Plus className="mr-2 h-4 w-4" /> Add New Category
                           </Button>
-                          
+
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-gray-600">Quick Stats</p>
+                            <p className="text-sm font-medium text-gray-600">
+                              Quick Stats
+                            </p>
                             <div className="grid grid-cols-2 gap-2">
                               <div className="p-3 bg-blue-50 rounded-lg">
                                 <p className="text-xs text-gray-600">Total</p>
-                                <p className="font-bold text-gray-900">{data.length}</p>
+                                <p className="font-bold text-gray-900">
+                                  {data.length}
+                                </p>
                               </div>
                               <div className="p-3 bg-green-50 rounded-lg">
                                 <p className="text-xs text-gray-600">Active</p>
-                                <p className="font-bold text-green-600">{activeCount}</p>
+                                <p className="font-bold text-green-600">
+                                  {activeCount}
+                                </p>
                               </div>
                             </div>
                           </div>
@@ -320,7 +346,7 @@ export default function BlogCategoryTable() {
                   </Sheet>
                 </div>
               </div>
-              
+
               <Button className="hidden lg:flex bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 h-auto">
                 <Plus className="mr-2 h-5 w-5" /> Add New Category
               </Button>
@@ -347,7 +373,9 @@ export default function BlogCategoryTable() {
               <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-sm">
                 <CardContent className="p-4 sm:p-6 flex items-center justify-between">
                   <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-600">Active</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">
+                      Active
+                    </p>
                     <p className="text-xl sm:text-3xl font-bold text-green-600">
                       {activeCount}
                     </p>
@@ -396,7 +424,10 @@ export default function BlogCategoryTable() {
                     className="pl-10 text-sm sm:text-base"
                   />
                 </div>
-                <Button variant="outline" className="border-gray-300 hidden sm:flex">
+                <Button
+                  variant="outline"
+                  className="border-gray-300 hidden sm:flex"
+                >
                   <Filter className="mr-2 h-4 w-4" />
                   Filter
                 </Button>
@@ -410,13 +441,21 @@ export default function BlogCategoryTable() {
                   <div className="text-center py-8 text-gray-500">
                     <div className="flex flex-col items-center justify-center">
                       <Search className="h-8 w-8 text-gray-300 mb-2" />
-                      <p className="text-base font-medium">No categories found</p>
-                      <p className="text-gray-400 text-sm">Try adjusting your search terms</p>
+                      <p className="text-base font-medium">
+                        No categories found
+                      </p>
+                      <p className="text-gray-400 text-sm">
+                        Try adjusting your search terms
+                      </p>
                     </div>
                   </div>
                 ) : (
                   currentData.map((item, index) => (
-                    <MobileCategoryCard key={item.id} item={item} index={index} />
+                    <MobileCategoryCard
+                      key={item.id}
+                      item={item}
+                      index={index}
+                    />
                   ))
                 )}
               </div>
@@ -456,8 +495,12 @@ export default function BlogCategoryTable() {
                         >
                           <div className="flex flex-col items-center justify-center">
                             <Search className="h-8 w-8 text-gray-300 mb-2" />
-                            <p className="text-base font-medium">No categories found</p>
-                            <p className="text-gray-400 text-sm">Try adjusting your search terms</p>
+                            <p className="text-base font-medium">
+                              No categories found
+                            </p>
+                            <p className="text-gray-400 text-sm">
+                              Try adjusting your search terms
+                            </p>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -535,7 +578,9 @@ export default function BlogCategoryTable() {
 
                   <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
                     <div className="flex items-center space-x-2 w-full justify-between sm:justify-start sm:w-auto">
-                      <span className="text-xs sm:text-sm text-gray-600">Show:</span>
+                      <span className="text-xs sm:text-sm text-gray-600">
+                        Show:
+                      </span>
                       <select
                         value={itemsPerPage}
                         onChange={(e) => {

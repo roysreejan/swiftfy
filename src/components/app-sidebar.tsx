@@ -1,8 +1,7 @@
 "use client";
 
+import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Calendar,
   Home,
@@ -28,6 +27,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -60,40 +60,29 @@ const items = [
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
-type AppSidebarProps = {
-  setCurrentPage: (page: string) => void;
-  currentPage: string;
-};
-
-export function AppSidebar({ setCurrentPage, currentPage }: AppSidebarProps) {
-  const [activeItem, setActiveItem] = useState(currentPage || "Home");
+export function AppSidebar() {
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { state } = useSidebar();
   const router = useRouter();
+  const pathname = usePathname(); // 👈 get current path
 
-  const handleClick = (title: string) => {
-    setActiveItem(title);
-    setCurrentPage(title);
+  const isCollapsed = state === "collapsed";
+
+  const handleClick = (url: string) => {
+    router.push(url);
   };
 
   const handleProfile = () => {
-    console.log("Opening profile...");
-    // Add your profile logic here
     router.push("/profile");
   };
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-
     try {
-      // Use NextAuth's signOut instead of manual cleanup
       await signOut({ redirect: false });
-
-      // Clear any additional client-side storage if needed
       localStorage.removeItem("authToken");
       localStorage.removeItem("userData");
-
-      // Redirect to login page
       router.push("/login");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -103,72 +92,81 @@ export function AppSidebar({ setCurrentPage, currentPage }: AppSidebarProps) {
     }
   };
 
-  const openLogoutDialog = () => {
-    setIsLogoutDialogOpen(true);
-  };
-
-  const closeLogoutDialog = () => {
-    setIsLogoutDialogOpen(false);
-  };
-
   return (
     <>
-      <Sidebar className="w-64 bg-gray-100 border-r flex flex-col">
-        <SidebarContent className="flex-1">
+      <Sidebar
+        className={`bg-gray-100 border-r transition-all duration-300 ${
+          isCollapsed ? "w-16" : "w-64"
+        }`}
+        collapsible="icon"
+      >
+        <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Application</SidebarGroupLabel>
+            {!isCollapsed && <SidebarGroupLabel>Application</SidebarGroupLabel>}
             <SidebarGroupContent>
               <SidebarMenu>
-                {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      isActive={activeItem === item.title}
-                      onClick={() => handleClick(item.title)}
-                    >
-                      <Link
-                        href={item.url}
-                        className="flex items-center gap-2 w-full"
+                {items.map((item) => {
+                  const isActive = pathname.startsWith(item.url);
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        isActive={isActive}
+                        onClick={() => handleClick(item.url)}
+                        tooltip={isCollapsed ? item.title : undefined}
                       >
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                        <div className="flex items-center gap-2 cursor-pointer">
+                          <item.icon className="h-4 w-4" />
+                          {!isCollapsed && <span>{item.title}</span>}
+                        </div>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
 
         {/* Sidebar Footer with Profile */}
-        <SidebarFooter className="p-4 border-t">
+        <SidebarFooter className={isCollapsed ? "p-2" : "p-4"}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="w-full justify-start h-auto p-3 hover:bg-gray-200 transition-colors"
+                className={`w-full justify-start h-auto hover:bg-gray-200 transition-colors ${
+                  isCollapsed ? "p-2 justify-center" : "p-3"
+                }`}
               >
-                <div className="flex items-center gap-3 w-full">
+                <div
+                  className={`flex items-center ${
+                    isCollapsed ? "justify-center" : "gap-3"
+                  } w-full`}
+                >
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/avatars/user.png" alt="Profile" />
                     <AvatarFallback className="bg-blue-500 text-white">
                       JD
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1 text-left min-w-0">
-                    <p className="font-medium text-sm truncate">John Doe</p>
-                    <p className="text-xs text-gray-500 truncate">
-                      admin@example.com
-                    </p>
-                  </div>
-                  <ChevronDown className="h-4 w-4 text-gray-400 shrink-0" />
+
+                  {!isCollapsed && (
+                    <>
+                      <div className="flex-1 text-left min-w-0">
+                        <p className="font-medium text-sm truncate">John Doe</p>
+                        <p className="text-xs text-gray-500 truncate">
+                          admin@example.com
+                        </p>
+                      </div>
+                      <ChevronDown className="h-4 w-4 text-gray-400 shrink-0" />
+                    </>
+                  )}
                 </div>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-64 ml-2 mb-2"
-              align="start"
-              side="top"
+              className="w-64"
+              align={isCollapsed ? "center" : "start"}
+              side={isCollapsed ? "right" : "top"}
             >
               <DropdownMenuLabel className="p-0">
                 <div className="flex items-center gap-3 p-2">
@@ -216,7 +214,7 @@ export function AppSidebar({ setCurrentPage, currentPage }: AppSidebarProps) {
               <DropdownMenuSeparator />
 
               <DropdownMenuItem
-                onClick={openLogoutDialog}
+                onClick={() => setIsLogoutDialogOpen(true)}
                 className="text-red-600 focus:text-red-600"
                 disabled={isLoggingOut}
               >
@@ -235,9 +233,7 @@ export function AppSidebar({ setCurrentPage, currentPage }: AppSidebarProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              Are you sure you want to logout?
-            </AlertDialogTitle>
+            <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
             <AlertDialogDescription>
               You will be redirected to the login page. Any unsaved changes may
               be lost.
@@ -246,7 +242,7 @@ export function AppSidebar({ setCurrentPage, currentPage }: AppSidebarProps) {
           <AlertDialogFooter>
             <AlertDialogCancel
               disabled={isLoggingOut}
-              onClick={closeLogoutDialog}
+              onClick={() => setIsLogoutDialogOpen(false)}
             >
               Cancel
             </AlertDialogCancel>
