@@ -427,7 +427,7 @@ export default function BlogCategoryTable() {
                   <TableHeader>
                     <TableRow className="bg-gray-100/80 hover:bg-gray-200/80">
                       <TableHead className="w-16 text-center font-semibold text-gray-700 py-3 sm:py-4 text-xs sm:text-sm">
-                        #
+                        SL
                       </TableHead>
                       <TableHead className="font-semibold text-gray-700 py-3 sm:py-4 min-w-[120px] sm:min-w-[200px] text-center text-xs sm:text-sm">
                         Category

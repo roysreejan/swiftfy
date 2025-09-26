@@ -49,9 +49,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { signOut } from "next-auth/react";
 
 const items = [
-  { title: "Home", url: "/", icon: Home },
+  { title: "Home", url: "/home", icon: Home },
   { title: "Blog", url: "/blog", icon: FilePen },
   { title: "Inbox", url: "/inbox", icon: Inbox },
   { title: "Calendar", url: "/calendar", icon: Calendar },
@@ -85,32 +86,17 @@ export function AppSidebar({ setCurrentPage, currentPage }: AppSidebarProps) {
     setIsLoggingOut(true);
 
     try {
-      // Simulate API call for logout
-      console.log("Logging out...");
+      // Use NextAuth's signOut instead of manual cleanup
+      await signOut({ redirect: false });
 
-      // Add your actual logout logic here, for example:
-      // - Clear authentication tokens
-      // - Clear user data from localStorage/sessionStorage
-      // - Clear cookies
-      // - Send logout request to your backend
-
-      // Example: Clear tokens and user data
+      // Clear any additional client-side storage if needed
       localStorage.removeItem("authToken");
       localStorage.removeItem("userData");
-      sessionStorage.removeItem("sessionData");
-
-      // Clear cookies (you might need a proper cookie library)
-      document.cookie =
-        "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Redirect to login page
       router.push("/login");
     } catch (error) {
       console.error("Logout failed:", error);
-      // Handle logout error (show error message, etc.)
     } finally {
       setIsLoggingOut(false);
       setIsLogoutDialogOpen(false);
