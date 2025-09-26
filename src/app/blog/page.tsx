@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import BlogCategoryTable from "@/components/Blog/BlogCategoryTable";
 
-import Home from "@/components/Home/Home";
-
-export default function HomePage() {
+export default function BlogPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
@@ -22,5 +21,5 @@ export default function HomePage() {
 
   if (loading) return null;
 
-  return <Home />;
+  return <BlogCategoryTable />;
 }

@@ -4,12 +4,12 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useState } from "react";
 
-export default function HomeLayout({
+export default function BlogLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [currentPage, setCurrentPage] = useState("Home");
+  const [currentPage, setCurrentPage] = useState("Blog");
 
   return (
     <SidebarProvider>
@@ -19,7 +19,7 @@ export default function HomeLayout({
           <div className="flex items-center gap-3 mb-4">
             <SidebarTrigger />
             <h1 className="text-sm font-normal">
-              Home &gt; {currentPage}
+              Blog &gt; {currentPage}
             </h1>
           </div>
           {children}
